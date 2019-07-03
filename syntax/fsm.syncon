@@ -1,0 +1,41 @@
+comment "\\(\\*" "\\*\\)"
+
+// Identifiers and types
+token Ident = "[[:alpha:]][[:word:]]+"
+type Type
+syncon typ: Type = Ident
+
+// Expressions
+token Integer = "[0-9]+"
+type Expr
+syncon int:Expr = n:Integer
+syncon var:Expr = id:Ident
+
+// Top-level
+type Decl
+syncon decls:Top = decl:Decl+
+
+// Parameters
+type Param
+syncon param: Param = id:Ident ":" ty:Type
+type ParamList
+syncon paramList: ParamList =
+  "(" (param:Param ("," rest:Param)*)? ")"
+
+syncon paramDecl: Decl = "parameters" params:ParamList
+
+// Inputs
+syncon inputDecl: Decl = "input" id:Ident ":" ty:Type
+
+// States and transitions
+syncon stateDecl: Decl = "state" id:Ident ("," rest:Ident)*
+
+syncon startDecl: Decl = "start" id:Ident
+
+type TransitionComponent
+syncon transition: TransitionComponent = from:Ident "->" to:Ident
+syncon output: TransitionComponent = "output" val:Expr
+syncon condition: TransitionComponent = "when" cond:Expr
+
+syncon transitionDecl: Decl =
+  comp:TransitionComponent ("," rest:TransitionComponent)*
